@@ -6,3 +6,9 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+.navbar .avatar {
+    position: relative;
+    left: -4px;
+    top: -2px;
+}

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,5 +19,8 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+
+Route::get('/auth/{service}', [App\Http\Controllers\Auth\LoginController::class, 'redirectToProvider'])->where('service','github|facebook');
+Route::get('/auth/{service}/callback', [App\Http\Controllers\Auth\LoginController::class, 'handleProviderCallback']);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
