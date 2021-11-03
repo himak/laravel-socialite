@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Session;
@@ -59,15 +60,21 @@ class LoginController extends Controller
     {
         $oauth_user = Socialite::driver($service)->user();
 
-        // get user by email or create a new one
-        $user = \App\Models\User::firstOrCreate([
-            'name' => $oauth_user->name,
-            'email' => $oauth_user->email,
-            'password' => '',
-            'image' => $oauth_user->avatar,
-            'service' => $service,
-            'service_id' => $oauth_user->id,
-        ]);
+        // Find user by email, if exist
+        if (!$user = User::whereEmail($oauth_user->email)->first()) {
+
+            $user = User::updateOrCreate([
+                'name' => $oauth_user->name,
+                'email' => $oauth_user->email,
+                'password' => '',
+                'image' => $oauth_user->avatar,
+                'service' => $service,
+                'service_id' => $oauth_user->id,
+            ]);
+        }
+        else {
+            $user = User::whereEmail($oauth_user->email)->first();
+        }
 
         // log the user in
         \Auth::login($user, true);
